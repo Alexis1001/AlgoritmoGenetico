@@ -30,7 +30,7 @@ def generandoPoblacion(poblacionInicial,tamanioGenotipo):
     return individuos
 
 def  fitness(individuos):
-    print("los indivudos son ",individuos)
+    print("los indivudos son fitness XXX ",individuos)
     xi=[]
     yi=[]
     tamanio=len(individuos[0])
@@ -125,15 +125,20 @@ def ruleta(individuos,listaFitness,tamanioInicialPoblacion):
         if len(nuevosPadres)==1 :
             padre1=nuevosPadres[0]
             ListaNuevosPadres.append(padre1)
-        if len(nuevosPadres)==2:
-            padre2=nuevosPadres[0]
-            ListaNuevosPadres.append(padre2)
-            padre3=nuevosPadres[1]
-            ListaNuevosPadres.append(padre3)     
-        nuevaGeneracion=nuevaGeneracion+len(nuevosPadres)   
+        if len(nuevosPadres)==2: #aqui debe de ir la condicion perro de cuando tengo 9 y salgan 2
+            if len(ListaNuevosPadres)==tamanioInicialPoblacion-1:
+                padre2=nuevosPadres[0]
+                ListaNuevosPadres.append(padre2)
+            else:
+                padre2=nuevosPadres[0]
+                ListaNuevosPadres.append(padre2)
+                padre3=nuevosPadres[1]
+                ListaNuevosPadres.append(padre3)     
+        nuevaGeneracion=nuevaGeneracion+len(nuevosPadres)
+
+    print("tamanio de nuevos padres en la ruleta ",len(ListaNuevosPadres))
     print(ListaNuevosPadres)
-    
-    #fitness(ListaNuevosPadres)
+    Iteraciones(ListaNuevosPadres)
 
        
 def cruza_mutacion(padre,madre):
@@ -178,20 +183,36 @@ def cruza_mutacion(padre,madre):
 
     if((decimalHijo2A>0 and decimalHijo2A<60) and (decimalHijo2B>0 and decimalHijo2B<60)):
         nuevosPadres.append(hijo2)   
-    print("individuos aceptado ")
-    print(nuevosPadres)
+
     return nuevosPadres  
+
+def Iteraciones(ListaNuevosPadres):
+
+    print("iteracion en el metodo iteraciones ",iterar)
+    iterar.append("1")
+    print("lista de los padre en el metodo iteraciones ")
+    print(ListaNuevosPadres)
+    print("el tamanio de la poblacion es en el metodo iteraciones ",len(ListaNuevosPadres))
+    print("total de generacion ",TotalDegeneraciones)
+    if len(iterar)<=TotalDegeneraciones:
+        print("seguir iterando ")
+        fitness(ListaNuevosPadres)
+    else:
+        print("interrumpido perrro")
         
+
 
 def main ():
     individuos=generandoPoblacion(10,12)
     fitness(individuos)
+    
 
 ProbabilidadMutacion=30
 minimos=[]
 maximos=[]
 promedios=[]
-TotalDegeneraciones=5
+iterar=[]
+TotalDegeneraciones=2
 IteracionPorGeneracion=1
 main()
 
