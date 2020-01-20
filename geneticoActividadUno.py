@@ -2,7 +2,8 @@ import random
 from random import randint
 import math
 import numpy as np
-
+import scipy as sp
+import matplotlib.pylab as plt
 
 def generandoPoblacion(poblacionInicial,tamanioGenotipo):
     poblacionInicial=poblacionInicial
@@ -30,7 +31,7 @@ def generandoPoblacion(poblacionInicial,tamanioGenotipo):
     return individuos
 
 def  fitness(individuos):
-    print("los indivudos son fitness XXX ",individuos)
+    print("INDIVIDUOS PARA SACAR EL FITNNES SON ",individuos)
     xi=[]
     yi=[]
     tamanio=len(individuos[0])
@@ -58,29 +59,146 @@ def  fitness(individuos):
         numeroB=decimalB*0.1
         print("numeroA ",numeroA)
         print("numeroB ",numeroB)
+        #ultimay_aux = ULTIMASY
         for k in range(len(xi)):
             x=float(xi[k])
             y=float(yi[k])
             print(" x = ",x," y = ",y,end='\n')
             fit_ness=abs(y-(math.cos(math.radians(numeroA*x)))*(math.sin(math.radians(numeroB*x))))
             resultado=round(fit_ness,3)
-            print(resultado)          
+            print(resultado)
+            #ultimay_aux[k]=resultado       
             sumatoriaFintness=sumatoriaFintness+resultado
         listaFitness.append(round(sumatoriaFintness,3)) #aqui guardo la sumatoria del fitnes de cada individuo 
         sumatoriaFintness=0 
-    print(listaFitness)
     tamanioInicialPoblacion=len(individuos) 
-    ruleta(individuos,listaFitness,tamanioInicialPoblacion)          
+    
+    maximo_valor=max(listaFitness)
+    maximos.append(maximo_valor)
+    minimo_valor=min(listaFitness)
+    minimos.append(minimo_valor)
+    sumatoria =sum(listaFitness)
+    longitud =float(len(listaFitness))
+    promedio = sumatoria / longitud
+    promedios.append(promedio)
 
-def ruleta(individuos,listaFitness,tamanioInicialPoblacion):
-    #print("el fitnees de los individuos es ",end='\n')
-    #print(listaFitness)
-    arregloFitness=np.array(listaFitness)
+    ruleta(individuos,tamanioInicialPoblacion,listaFitness)
+
+def ruleta(lista_individuos,tamanioInicialPoblacion,listaFitness):    
+
+    #listaPorcentajePrueva=[]
+    lista_Normal=np.array(listaFitness) # convierto la lista en array 
+    lista_mayor_a_menor=listaFitness  
+    lista_mayor_a_menor.sort(reverse=True) #ordener de forma decendente
+    suma_por_fitnnes=0
+    lista_suma_fitnnes=[]
+   # porcentajePrueva=0
+    for i in range(len(lista_mayor_a_menor)):
+        suma_por_fitnnes=suma_por_fitnnes+lista_mayor_a_menor[i]
+        lista_suma_fitnnes.append(suma_por_fitnnes)
+        
+    suman_total_lista=sum(lista_suma_fitnnes)
+    lista_porcentajes=[]
+    for k in range(len(lista_suma_fitnnes)):
+        porcentaje=int(lista_suma_fitnnes[k]/suman_total_lista*100)
+        #porcentajePrueva=lista_suma_fitnnes[k]/suman_total_lista
+        #listaPorcentajePrueva.append(porcentajePrueva)
+        lista_porcentajes.append(porcentaje)
+
+    #print("XXXXXXXXXXXXXXXXXXXX",listaPorcentajePrueva)
+    array_porcentajes=np.array(lista_porcentajes)
+    lista_mayor_a_menor_porcentaje=lista_porcentajes  
+    lista_mayor_a_menor_porcentaje.sort(reverse=True)       
+
+    intervalos=[]
+    suma_intervalos=0
+    for x in range(len(lista_mayor_a_menor_porcentaje)):
+        suma_intervalos=suma_intervalos+lista_mayor_a_menor_porcentaje[x]
+        intervalos.append(suma_intervalos)    
+    suma_total_porcentajes=np.sum(array_porcentajes)
+    
+    encontrado_aleatorio_1=False
+    encontrado_aleatorio_2=False
+    aleatorio_1=0
+    aleatorio_2=0
+    individuo1Acruzar=0
+    individuo2Acruzar=0
+    individuos=0
+    individuo_cruzar1=0
+    individuo_cruzar2=0
+    ListaNuevosPadres=[]
+    while individuos<tamanioInicialPoblacion:
+        
+        aleatorio_1=random.randint(0,suma_total_porcentajes)
+        aleatorio_2=random.randint(0,suma_total_porcentajes)
+        for k in range(len(intervalos)) :
+            if k==0 and aleatorio_1<=intervalos[k] :
+                individuo1Acruzar=k
+                encontrado_aleatorio_1=True
+            
+            if aleatorio_1<=intervalos[k] and aleatorio_1>intervalos[k-1]:
+                individuo1Acruzar=k
+                encontrado_aleatorio_1=True
+            
+            if k==0 and aleatorio_2<=intervalos[k] :
+                individuo2Acruzar=k
+                encontrado_aleatorio_2=True
+
+            if aleatorio_2<=intervalos[k] and aleatorio_2>intervalos[k-1]:   
+                individuo2Acruzar=k
+                encontrado_aleatorio_2=True
+            
+            if(encontrado_aleatorio_1==True and encontrado_aleatorio_2==True):
+                
+                individuo1=lista_mayor_a_menor_porcentaje[individuo1Acruzar]
+                individuo2=lista_mayor_a_menor_porcentaje[individuo2Acruzar]
+                 
+                for  k in range(len(array_porcentajes)):
+                    if array_porcentajes[k]==individuo1 :
+                        break
+                for m in range(len(array_porcentajes)):
+                    if  array_porcentajes[m]==individuo2 :        
+                        break 
+                pocion_del_individuo1=lista_Normal[k]
+                pocion_del_individuo2=lista_Normal[m]
+                for n in range(len(lista_Normal)):
+                    if lista_Normal[n]==pocion_del_individuo1:
+                        individuo_cruzar1=n
+                        break
+                for m in range(len(lista_Normal)):
+                    if lista_Normal[m]==pocion_del_individuo2:
+                        individuo_cruzar2=m
+                        break
+                break  
+        #print("individuos a cruzar son  ",individuo_cruzar1," -",individuo_cruzar2)  
+        encontrado_aleatorio_1=False
+        encontrado_aleatorio_2=False
+        nuevosPadres=cruza_mutacion(lista_individuos[individuo_cruzar1],lista_individuos[individuo_cruzar2])    
+        if len(nuevosPadres)==1 :
+            padre1=nuevosPadres[0]
+            ListaNuevosPadres.append(padre1)
+        if len(nuevosPadres)==2: #aqui debe de ir la condicion de cuando tengo 9 y salgan 2 y mi poblacion es de 10
+            if len(ListaNuevosPadres)==tamanioInicialPoblacion-1:
+                padre2=nuevosPadres[0]
+                ListaNuevosPadres.append(padre2)
+            else:
+                padre2=nuevosPadres[0]
+                ListaNuevosPadres.append(padre2)
+                padre3=nuevosPadres[1]
+                ListaNuevosPadres.append(padre3)     
+        individuos=individuos+len(nuevosPadres)
+    #print("nueva generacion")
+    #print(ListaNuevosPadres)
+    #print(len(ListaNuevosPadres))
+    Iteraciones(ListaNuevosPadres)
+    """arregloFitness=np.array(listaFitness)
     sumaTotalFitness=np.sum(arregloFitness)
     fitnessTotal=round(sumaTotalFitness,3)
     intervalos=[]
     sumaIntervalos=0
-    print("Total finnes ",fitnessTotal)
+    print(listaFitness)
+    print("TOTAL DEL FITNNES ",fitnessTotal)
+    fitnessTotalPorIndividuo.append(fitnessTotal)#aqui guardo el total por individuo en la lista fitnees Total por indiviuo
     for i in range(len(listaFitness)):
         divicionFitness=round(arregloFitness[i]/fitnessTotal,3)
         sumaIntervalos=round(sumaIntervalos+divicionFitness,3)
@@ -115,17 +233,14 @@ def ruleta(individuos,listaFitness,tamanioInicialPoblacion):
                 encontrado_aleatorio_2=True
             
             if(encontrado_aleatorio_1==True and encontrado_aleatorio_2==True):
-                print("cruzamiento individuo [1] ",individuo1Acruzar," con "," individuo [2] ",individuo2Acruzar)
                 break    
         encontrado_aleatorio_1=False
         encontrado_aleatorio_2=False
-        print("individuo ",individuos[individuo1Acruzar]," cruza con individuo ",individuos[individuo2Acruzar]) 
-        #aqui mando los individuos que voy a cruzar
         nuevosPadres=cruza_mutacion(individuos[individuo1Acruzar],individuos[individuo2Acruzar])    
         if len(nuevosPadres)==1 :
             padre1=nuevosPadres[0]
             ListaNuevosPadres.append(padre1)
-        if len(nuevosPadres)==2: #aqui debe de ir la condicion perro de cuando tengo 9 y salgan 2
+        if len(nuevosPadres)==2: #aqui debe de ir la condicion de cuando tengo 9 y salgan 2 y mi poblacion es de 10
             if len(ListaNuevosPadres)==tamanioInicialPoblacion-1:
                 padre2=nuevosPadres[0]
                 ListaNuevosPadres.append(padre2)
@@ -136,9 +251,7 @@ def ruleta(individuos,listaFitness,tamanioInicialPoblacion):
                 ListaNuevosPadres.append(padre3)     
         nuevaGeneracion=nuevaGeneracion+len(nuevosPadres)
 
-    print("tamanio de nuevos padres en la ruleta ",len(ListaNuevosPadres))
-    print(ListaNuevosPadres)
-    Iteraciones(ListaNuevosPadres)
+    Iteraciones(ListaNuevosPadres)"""
 
        
 def cruza_mutacion(padre,madre):
@@ -187,18 +300,33 @@ def cruza_mutacion(padre,madre):
     return nuevosPadres  
 
 def Iteraciones(ListaNuevosPadres):
-
-    print("iteracion en el metodo iteraciones ",iterar)
     iterar.append("1")
-    print("lista de los padre en el metodo iteraciones ")
-    print(ListaNuevosPadres)
-    print("el tamanio de la poblacion es en el metodo iteraciones ",len(ListaNuevosPadres))
-    print("total de generacion ",TotalDegeneraciones)
     if len(iterar)<=TotalDegeneraciones:
-        print("seguir iterando ")
         fitness(ListaNuevosPadres)
     else:
-        print("interrumpido perrro")
+        #print(fitnessTotalPorIndividuo)
+        print("maximos ",maximos)
+        print("minimos ",minimos)
+        print("promedios ",promedios)
+        print("ultimas y ",ULTIMASY)
+        plt.title("fitnnes")
+        plt.plot(maximos, linestyle='-', label = "peores")
+        plt.plot(minimos,linestyle='-', label = "mejores")
+        plt.plot(promedios,linestyle='-', label = "promedio")
+        plt.xlabel("abscisa")   # Inserta el título del eje X
+        plt.ylabel("ordenada") 
+        plt.legend()
+        plt.show()
+        #funciones_x_y()
+
+def funciones_x_y():
+    plt.title("X Y")
+    #plt.plot(VALORES_X,linestyle='-', label = "XX")
+    plt.plot( VALORES_X,VALORES_Y,linestyle='-', label = "original")
+    plt.plot(VALORES_X,ULTIMASY,linestyle='-', label = "generados")
+    plt.legend()
+    plt.show()
+
         
 
 
@@ -211,8 +339,12 @@ ProbabilidadMutacion=30
 minimos=[]
 maximos=[]
 promedios=[]
+VALORES_X= [0, .25, .5, .75, 1, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3, 3.25, 3.5, 3.75, 4, 4.25, 4.5, 4.75, 5]
+VALORES_Y= [ 0.0718, 0.8103, 0.5631, 0.0818, 0.3868, 0.8400, 0.3484, -0.5434, -0.5749, -0.0151, -0.0825, -0.6369, -0.4434, 0.4821, 0.8186, 0.2972, 0.1137, 0.6506, 0.7561, -0.0776, -0.6942]
 iterar=[]
-TotalDegeneraciones=2
+ULTIMASY=[]
+fitnessTotalPorIndividuo=[]
+TotalDegeneraciones=50
 IteracionPorGeneracion=1
 main()
 
