@@ -25,16 +25,15 @@ def generandoPoblacion(poblacionInicial,tamanioGenotipo):
         if(decimalA>0 and decimalA<60 and decimalB>0 and decimalB<60):
             copia=individuo[:]
             individuos.append(copia)
-            Padres=Padres+1 
-        else :
-            print(" ") 
+            Padres=Padres+1  
         individuo.clear()  
     return individuos
 
 def  fitness(individuos):
+    aproximaciones=[]
+    arreglo_de_aproximaciones=[]
     iterar.append("1")
     if len(iterar)==TotalDegeneraciones+1:
-        print("total de generaciones es ",len(iterar))
         graficarMejoresPeoresPromedios(maximos,minimos,promedios)        
     else:
         tamanio=len(individuos[0])
@@ -61,19 +60,19 @@ def  fitness(individuos):
                 x=float(xi[k])
                 y=float(yi[k])
                 print(" x = ",x," y = ",y,end='\n')
-                fit_ness=abs(y-(math.cos(math.radians(numeroA*x)))*(math.sin(math.radians(numeroB*x))))
+                #fit_ness=abs(y-(math.cos(math.radians(numeroA*x)))*(math.sin(math.radians(numeroB*x))))
+                fit_ness=abs(y-(np.cos(numeroA*x)*np.sin(numeroB*x)))
                 resultado=round(fit_ness,3)
-                print(resultado)     
+                print(resultado)
                 sumatoriaFintness=sumatoriaFintness+resultado
-                if len(iterar)==TotalDegeneraciones:#nuevo
-                    y_prima=(y-(math.cos(math.radians(numeroA*x)))*(math.sin(math.radians(numeroB*x))))
-                    #y_prima=(math.cos(math.radians(numeroA*x)))*(math.sin(math.radians(numeroB*x)))
-                    cordenada_y=round(y_prima,4)
-                    cordenadasY.append(cordenada_y)
+                cordenadas_ys=(np.cos(numeroA*x)*np.sin(numeroB*x))
+                cordenada_y=round(cordenadas_ys,3) 
+                aproximaciones.append(cordenada_y)
+                aproximaciones_y=aproximaciones[:]
+            arreglo_de_aproximaciones.append(aproximaciones_y)
+            aproximaciones.clear()
             listaFitness.append(round(sumatoriaFintness,3)) #aqui guardo la sumatoria del fitnes de cada individuo 
             sumatoriaFintness=0
-            if len(iterar)==TotalDegeneraciones: #nuevo
-                Mejores_Y.append(cordenadasY) 
         tamanioInicialPoblacion=len(individuos) 
         maximo_valor=max(listaFitness)
         maximos.append(maximo_valor)
@@ -83,6 +82,11 @@ def  fitness(individuos):
         longitud =float(len(listaFitness))
         promedio = sumatoria / longitud
         promedios.append(promedio)
+
+        pocision=listaFitness.index(minimo_valor)
+        y_de_minimos_valores=arreglo_de_aproximaciones[pocision]
+        MejoresIndividuos.append(minimo_valor)
+        Cordenadas_Y.append(y_de_minimos_valores)
         ruleta(individuos,tamanioInicialPoblacion,listaFitness)
 
 def ruleta(lista_individuos,tamanioInicialPoblacion,listaFitness):    
@@ -230,21 +234,8 @@ def cruza_mutacion(padre,madre):
       
 def graficarMejoresPeoresPromedios(maximos,minimos,promedios):
     
-    sumaFitnnesIndividuo=[]
-    mejor=0
-    for a in range(len(Mejores_Y)):
-        suma=sum(Mejores_Y[a])
-        sumaFitnnesIndividuo.append(round(suma,4))
-    mejor=min(sumaFitnnesIndividuo)
-    posicion=sumaFitnnesIndividuo.index(mejor)
-    Cordenadas_Y=Mejores_Y[posicion]
-
-    print("Y del profe ")
-    print(VALORES_Y)
-    print("Y del algoritmo ")
-    print(Cordenadas_Y)
-    """Cordenadas_Y.pop(0)
-    Cordenadas_Y.insert(0,0.0)""" 
+    minimo=min(MejoresIndividuos)
+    VALORES_Y_GENERADOS=Cordenadas_Y[MejoresIndividuos.index(minimo)]
     plt.subplot(221)
     plt.title("fitnnes")
     plt.plot(maximos, linestyle='-', label = "peores")
@@ -257,7 +248,7 @@ def graficarMejoresPeoresPromedios(maximos,minimos,promedios):
     plt.subplot(222)
     plt.title("valores reales y generados")
     plt.plot( VALORES_X,VALORES_Y,linestyle='-', label = "original")
-    plt.plot(VALORES_X,Cordenadas_Y,linestyle='-', label = "generados")
+    plt.plot(VALORES_X,VALORES_Y_GENERADOS,linestyle='-', label = "generados")
     plt.xlabel("abscisa")  
     plt.ylabel("cordenada") 
     plt.legend()
@@ -267,7 +258,7 @@ def main ():
     individuos=generandoPoblacion(10,12)
     fitness(individuos)
     
-
+TotalDegeneraciones=50
 ProbabilidadMutacion=30
 minimos=[]
 maximos=[]
@@ -275,9 +266,10 @@ promedios=[]
 VALORES_X=[0, .25, .5, .75, 1, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3, 3.25, 3.5, 3.75, 4, 4.25, 4.5, 4.75, 5]
 VALORES_Y=[0.0718, 0.8103, 0.5631, 0.0818, 0.3868, 0.8400, 0.3484, -0.5434, -0.5749, -0.0151, -0.0825, -0.6369, -0.4434, 0.4821, 0.8186, 0.2972, 0.1137, 0.6506, 0.7561, -0.0776, -0.6942]
 iterar=[]
-fitnessTotalPorIndividuo=[]
-TotalDegeneraciones=50
-Mejores_Y=[]
+
+Cordenadas_Y=[]
+MejoresIndividuos=[]
+
 main()
 
 #alone heart
