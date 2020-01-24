@@ -32,6 +32,7 @@ def generandoPoblacion(poblacionInicial,tamanioGenotipo):
 def  fitness(individuos):
     aproximaciones=[]
     arreglo_de_aproximaciones=[]
+    Mejor_individuo_Binario=[]
     iterar.append("1")
     if len(iterar)==TotalDegeneraciones+1:
         graficarMejoresPeoresPromedios(maximos,minimos,promedios)        
@@ -42,6 +43,7 @@ def  fitness(individuos):
         yi=VALORES_Y
         sumatoriaFintness=0
         listaFitness=[]
+        Lista_A_B=[]
         for j in range(len(individuos)):
             print("pocicion de j ",j)
             individuo=individuos[j]
@@ -53,8 +55,8 @@ def  fitness(individuos):
             decimalB=int(BinarioB,2)
             print("parte   A ",BinarioA," parte   B ",BinarioB,end='\n')
             print("decimal A ",decimalA," decimal B ",decimalB,end='\n')
-            numeroA=decimalA*0.1
-            numeroB=decimalB*0.1
+            numeroA=round(decimalA*0.1,3)
+            numeroB=round(decimalB*0.1,3)
             cordenadasY=[]
             for k in range(len(xi)):
                 x=float(xi[k])
@@ -72,24 +74,33 @@ def  fitness(individuos):
             arreglo_de_aproximaciones.append(aproximaciones_y)
             aproximaciones.clear()
             listaFitness.append(round(sumatoriaFintness,3)) #aqui guardo la sumatoria del fitnes de cada individuo 
+            Numero_A=str(numeroA)
+            Numero_B=str(numeroB)
+            Numero_A_B="["+Numero_A+","+Numero_B+"]" 
+            Lista_A_B.append(Numero_A_B)            
             sumatoriaFintness=0
         tamanioInicialPoblacion=len(individuos) 
-        maximo_valor=max(listaFitness)
-        maximos.append(maximo_valor)
-        minimo_valor=min(listaFitness)
-        minimos.append(minimo_valor)
-        sumatoria =sum(listaFitness)
-        longitud =float(len(listaFitness))
-        promedio = sumatoria / longitud
-        promedios.append(promedio)
+        maximo_valor=max(listaFitness)# obtengo el maximo valor  del fitnnes total de los individuos 
+        maximos.append(maximo_valor) #el maximo valor se agrega en la lista de maximos
+        minimo_valor=min(listaFitness)#obtengo el minimo valor  del fitnnes total de los diez indivuos 
+        minimos.append(minimo_valor)#el minimo valor se agrega en la lista minimos
+        sumatoria =sum(listaFitness)#sumo toda la lista de los fitnnes total de los individuos 
+        longitud =float(len(listaFitness))#obtengo la cantidad de individuos 
+        promedio = sumatoria / longitud #obtengo el promedio
+        promedios.append(promedio) #guardo el promedio en las lista promedios
 
-        pocision=listaFitness.index(minimo_valor)
-        y_de_minimos_valores=arreglo_de_aproximaciones[pocision]
-        MejoresIndividuos.append(minimo_valor)
-        Cordenadas_Y.append(y_de_minimos_valores)
-        ruleta(individuos,tamanioInicialPoblacion,listaFitness)
+        pocision=listaFitness.index(minimo_valor)#obtengo la pocicion de  mas fitness o sea el minimo
+        y_de_minimos_valores=arreglo_de_aproximaciones[pocision]#obtengo la lista de sus y´s
+        MejoresIndividuos.append(minimo_valor)#guardo el fitness de el  mejor individuo
+        Cordenadas_Y.append(y_de_minimos_valores)#guardo las cordenadas del el mejor individuo basado en su fitness
+       
+        Mejor_individuo_Binario=individuos[pocision]#guarda el binario del mejor individuo 
+        MejoresIndividuosBinarios.append(individuos[pocision])#guardo el binario del mejor individuo
+        lista_de_A_y_B.append(Lista_A_B[pocision])#guardo las [a,b] del mejor indiviudo
+        Mejores_fitness.append(minimo_valor)#guardo el fitnnes del mejor individuo
+        ruleta(individuos,tamanioInicialPoblacion,listaFitness,Mejor_individuo_Binario)
 
-def ruleta(lista_individuos,tamanioInicialPoblacion,listaFitness):    
+def ruleta(lista_individuos,tamanioInicialPoblacion,listaFitness,Mejor_individuo_Binario):     
     lista_Normal=np.array(listaFitness) 
     lista_mayor_a_menor=listaFitness  
     lista_mayor_a_menor.sort(reverse=True) 
@@ -178,6 +189,7 @@ def ruleta(lista_individuos,tamanioInicialPoblacion,listaFitness):
         if len(nuevosPadres)==2: #aqui debe de ir la condicion de cuando tengo 9 y salgan 2 y mi poblacion es de 10
             if len(ListaNuevosPadres)==tamanioInicialPoblacion-1:
                 padre2=nuevosPadres[0]
+
                 ListaNuevosPadres.append(padre2)
             else:
                 padre2=nuevosPadres[0]
@@ -185,6 +197,9 @@ def ruleta(lista_individuos,tamanioInicialPoblacion,listaFitness):
                 padre3=nuevosPadres[1]
                 ListaNuevosPadres.append(padre3)     
         individuos=individuos+len(nuevosPadres)
+    
+    ListaNuevosPadres.remove(ListaNuevosPadres[0])#removemos uno de los diez nuevos padres 
+    ListaNuevosPadres.insert(0,Mejor_individuo_Binario)#agregamos al mejor individuo de la iteracion anterior
     fitness(ListaNuevosPadres)
    
 def cruza_mutacion(padre,madre):
@@ -236,21 +251,25 @@ def graficarMejoresPeoresPromedios(maximos,minimos,promedios):
     
     minimo=min(MejoresIndividuos)
     VALORES_Y_GENERADOS=Cordenadas_Y[MejoresIndividuos.index(minimo)]
+
+    print(MejoresIndividuosBinarios)
+    print(lista_de_A_y_B)
+    print(Mejores_fitness)
     plt.subplot(221)
-    plt.title("fitnnes")
-    plt.plot(maximos, linestyle='-', label = "peores")
+    plt.title("fitness")
+    plt.plot(maximos,linestyle='-', label = "peores")
     plt.plot(promedios,linestyle='-', label = "promedios")
     plt.plot(minimos,linestyle='-', label = "mejores")
-    plt.xlabel("generacion")  
-    plt.ylabel("cordenada") 
+    plt.xlabel("generación")  
+    plt.ylabel("coordenadas") 
     plt.legend()
    
     plt.subplot(222)
     plt.title("valores reales y generados")
     plt.plot( VALORES_X,VALORES_Y,linestyle='-', label = "original")
     plt.plot(VALORES_X,VALORES_Y_GENERADOS,linestyle='-', label = "generados")
-    plt.xlabel("abscisa")  
-    plt.ylabel("cordenada") 
+    plt.xlabel("abscisas")  
+    plt.ylabel("coordenadas") 
     plt.legend()
     plt.show()
 
@@ -270,7 +289,13 @@ iterar=[]
 Cordenadas_Y=[]
 MejoresIndividuos=[]
 
+MejoresIndividuosBinarios=[]
+lista_de_A_y_B=[]
+Mejores_fitness=[]
+
 main()
 
-#alone heart
-#scorpion
+
+#a-b fitnnes 
+#matener el mejor individuo de la poblacion la grafica verde tiene que ir bajando
+ 
