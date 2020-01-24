@@ -251,10 +251,19 @@ def graficarMejoresPeoresPromedios(maximos,minimos,promedios):
     
     minimo=min(MejoresIndividuos)
     VALORES_Y_GENERADOS=Cordenadas_Y[MejoresIndividuos.index(minimo)]
+    for i in range(len(MejoresIndividuosBinarios)):
+        print(MejoresIndividuosBinarios[i])
+        print(lista_de_A_y_B[i])
+        print(Mejores_fitness[i])
 
-    print(MejoresIndividuosBinarios)
-    print(lista_de_A_y_B)
-    print(Mejores_fitness)
+    print("el mejore de los mejores ")
+    mini=min(Mejores_fitness)
+    pocision=Mejores_fitness.index(mini)
+    print(MejoresIndividuosBinarios[pocision])
+    print(lista_de_A_y_B[pocision])
+    print(Mejores_fitness[pocision])
+
+
     plt.subplot(221)
     plt.title("fitness")
     plt.plot(maximos,linestyle='-', label = "peores")
