@@ -256,7 +256,7 @@ def graficarMejoresPeoresPromedios(maximos,minimos,promedios):
         print(lista_de_A_y_B[i])
         print(Mejores_fitness[i])
 
-    print("el mejore de los mejores ")
+    print("el mejor de los mejores ")
     mini=min(Mejores_fitness)
     pocision=Mejores_fitness.index(mini)
     print(MejoresIndividuosBinarios[pocision])
@@ -265,20 +265,20 @@ def graficarMejoresPeoresPromedios(maximos,minimos,promedios):
 
 
     plt.subplot(221)
-    plt.title("fitness")
-    plt.plot(maximos,linestyle='-', label = "peores")
-    plt.plot(promedios,linestyle='-', label = "promedios")
-    plt.plot(minimos,linestyle='-', label = "mejores")
-    plt.xlabel("generación")  
-    plt.ylabel("coordenadas") 
+    plt.title("Evolución del Fitness")
+    plt.plot(maximos,linestyle='-', label = "peores casos")
+    plt.plot(promedios,linestyle='-', label = "casos promedios")
+    plt.plot(minimos,linestyle='-', label = "mejores casos")
+    plt.ylabel("Fitness") 
+    plt.xlabel("Generación")  
     plt.legend()
    
     plt.subplot(222)
-    plt.title("valores reales y generados")
+    plt.title("Comparativa entre x reales datos reales y aproximación")
     plt.plot( VALORES_X,VALORES_Y,linestyle='-', label = "original")
     plt.plot(VALORES_X,VALORES_Y_GENERADOS,linestyle='-', label = "generados")
-    plt.xlabel("abscisas")  
-    plt.ylabel("coordenadas") 
+    plt.ylabel("F(x)") 
+    plt.xlabel("x")  
     plt.legend()
     plt.show()
 
