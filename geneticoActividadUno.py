@@ -287,7 +287,7 @@ def main ():
     fitness(individuos)
     
 TotalDegeneraciones=50
-ProbabilidadMutacion=30
+ProbabilidadMutacion=50
 minimos=[]
 maximos=[]
 promedios=[]
